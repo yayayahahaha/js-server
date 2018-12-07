@@ -12,7 +12,9 @@ app.get('/list', function(req, res) {
 });
 
 app.get('*', function(req, res) {
-    res.status(404).end('404');
+    res.status(404).json({
+        message: 'nothing found'
+    });
 });
 
 var server = app.listen(8888, function() {
