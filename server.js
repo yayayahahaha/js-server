@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var fs = require('fs');
+var _ = require('lodash');
 
 var dbPath = 'db/data.json',
     db = fs.readFileSync(dbPath);
