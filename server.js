@@ -21,10 +21,13 @@ app.get('/list', function(req, res) {
 });
 
 app.post('/user', function(req, res) {
-    db.userList.push((new Array(10)).fill(null).map(function(item) {
+    if (!db.userList) {
+        db.userList = [];
+    }
+    db.userList.push((new Array(2)).fill(null).map(function(item) {
         return Math.random();
-    }).replace(/\./g, ''));
-    fs.writeFileSync(dbPath);
+    }).join('').replace(/\./g, ''));
+    fs.writeFileSync(dbPath, JSON.stringify(db));
     res.json({
         status: '200',
         message: '新增成功'
