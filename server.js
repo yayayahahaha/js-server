@@ -2,7 +2,12 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 
+var db = fs.readFileSync('db/data.json');
+    db = JSON.parse(db);
+
 app.get('/list', function(req, res) {
+    console.log(db);
+
     res.json([1, 2, 3, 4, 5, 5, 7, 7, 8, 9, 0, 1]);
 });
 
