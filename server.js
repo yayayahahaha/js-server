@@ -7,8 +7,28 @@ var dbPath = 'db/data.json',
     db = fs.readFileSync(dbPath);
 db = JSON.parse(db);
 
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Authorization');
+
+    next();
+}
+app.use(allowCrossDomain);
+
 app.get('/list', function(req, res) {
     res.json([1, 2, 3, 4, 5, 5, 7, 7, 8, 9, 0, 1]);
+});
+
+app.post('/user', function(req, res) {
+    db.userList.push((new Array(10)).fill(null).map(function(item) {
+        return Math.random();
+    }).replace(/\./g, ''));
+    fs.writeFileSync(dbPath);
+    res.json({
+        status: '200',
+        message: '新增成功'
+    });
 });
 
 app.get('*', function(req, res) {
