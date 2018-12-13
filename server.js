@@ -2,6 +2,25 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var _ = require('lodash');
+var pagerFunction = function(sourceArray, page, per_page) {
+    sourceArray = sourceArray ? sourceArray : [];
+    var chunkArray = [],
+        returnArray = [],
+        returnMeta = {
+            page: page,
+            per_page: per_page,
+            total_page: 0,
+            total_count: sourceArray.length
+        };
+
+    chunkArray = _.chunk(sourceArray, per_page);
+    returnArray = chunkArray[page - 1];
+    returnMeta.total_page = chunkArray.length;
+    return {
+        data: returnArray,
+        meta: returnMeta
+    };
+}
 
 var dbPath = 'db/data.json',
     db = fs.readFileSync(dbPath);
@@ -25,9 +44,10 @@ app.post('/user', function(req, res) {
         db.userList = [];
     }
     db.userList.push((new Array(2)).fill(null).map(function(item) {
-        return Math.random();
-    }).join('').replace(/\./g, ''));
-    fs.writeFileSync(dbPath, JSON.stringify(db));
+        return Math.random().toString();
+    }).splice(2).join(''));
+
+    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
     res.json({
         status: '200',
         message: '新增成功'
