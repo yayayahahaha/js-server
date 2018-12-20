@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var _ = require('lodash');
+
 var pagerFunction = function(sourceArray, page, per_page) {
     sourceArray = sourceArray ? sourceArray : [];
     var chunkArray = [],
@@ -27,6 +28,7 @@ var dbPath = 'db/data.json',
 db = JSON.parse(db);
 
 var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Methods', 'PUT');
     res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Headers', 'Authorization');
@@ -54,6 +56,28 @@ app.post('/user', function(req, res) {
     });
 });
 // 有點算是範例的兩個路由 end
+
+app.get('/app-domain', function(req, res) {
+    res.json({
+        app_domain: db['app-domain']
+    });
+});
+app.put('/app-domain', function(req, res) {
+    var body = '';
+
+    req.on('data', chunk => {
+        body += chunk.toString(); // convert Buffer to string
+
+        _responseToClient(JSON.parse(body));
+    });
+    req.on('end', () => {
+        // 這裡也可以回傳?
+    });
+
+    function _responseToClient(data) {
+        res.json(data);
+    }
+})
 
 app.get('*', function(req, res) {
     res.status(404).json({
