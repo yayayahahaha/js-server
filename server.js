@@ -35,10 +35,10 @@ var allowCrossDomain = function(req, res, next) {
 }
 app.use(allowCrossDomain);
 
+// 有點算是範例的兩個路由 start
 app.get('/list', function(req, res) {
     res.json([1, 2, 3, 4, 5, 5, 7, 7, 8, 9, 0, 1]);
 });
-
 app.post('/user', function(req, res) {
     if (!db.userList) {
         db.userList = [];
@@ -53,6 +53,7 @@ app.post('/user', function(req, res) {
         message: '新增成功'
     });
 });
+// 有點算是範例的兩個路由 end
 
 app.get('*', function(req, res) {
     res.status(404).json({
