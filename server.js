@@ -60,8 +60,6 @@ app.post('/user', function(req, res) {
 // 有點算是範例的兩個路由 end
 
 app.get('/app-domain', function(req, res) {
-    console.log(db.randomNumber.toString());
-    console.log(db.randomNumber);
     db.randomNumber = Math.random();
     fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 
@@ -69,6 +67,7 @@ app.get('/app-domain', function(req, res) {
         app_domain: db['app_domain']
     });
 });
+
 app.put('/app-domain', function(req, res) {
     req.on('data', chunk => {
         body += chunk.toString(); // convert Buffer to string
