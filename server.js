@@ -23,18 +23,24 @@ var pagerFunction = function(sourceArray, page, per_page) {
     };
 }
 
+var JsonDataBase = function(initData) {
+    initData = initData ? initData : {};
 
+    this.dbPath = typeof initData.dbPath === 'string' ? initData.dbPath : '';
 
-var dbPath = 'db/data.json',
-    db = fs.readFileSync(dbPath);
-db = (function(db) {
-    try {
-        return JSON.parse(db);
-    } catch (e) {
-        console.log('JSON.parse 失敗，將使用空陣列作為database ');
-        return {};
-    }
-})(db);
+    this.instance = (function(dbPath) {
+
+        if (!fs.existsSync(dbPath)) {
+            console.log('傳入的dbPath 沒有找到相對應的檔案，創建失敗!');
+            return null;
+        }
+
+    })(this.dbPath);
+}
+
+var db = new JsonDataBase({
+    dbPath: 'db/data.json'
+});
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
@@ -54,11 +60,14 @@ function initDataBase(write) {
         return index + 1;
     });
 
-    if (write) fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+    // if (write) fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 
     return db;
 }
 initDataBase();
+
+function updateDataBase() {
+}
 
 // 有點算是範例的兩個路由 start
 /*
@@ -84,7 +93,7 @@ app.post('/user', function(req, res) {
 
 app.get('/app-domain', function(req, res) {
     db.randomNumber = Math.random();
-    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+    // fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 
     res.json({
         app_domain: db['app_domain']
@@ -94,11 +103,6 @@ app.get('/app-domain', function(req, res) {
 app.put('/app-domain', function(req, res) {
     req.on('data', chunk => {
         body += chunk.toString(); // convert Buffer to string
-
-        fs.writeFileSync(dbPath, JSON.stringify(JSON.parse(body), null, 2));
-        db = fs.readFileSync(dbPath);
-        db = JSON.parse(db);
-
         _responseToClient(JSON.parse(body));
     });
     req.on('end', () => {
@@ -106,6 +110,7 @@ app.put('/app-domain', function(req, res) {
     });
 
     function _responseToClient(data) {
+        // fs.writeFileSync(dbPath, JSON.stringify(JSON.parse(body), null, 2));
         res.json(data);
     }
 })
