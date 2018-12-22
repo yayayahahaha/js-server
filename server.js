@@ -27,9 +27,7 @@ var JsonDataBase = function(initData) {
     initData = initData ? initData : {};
 
     this.dbPath = typeof initData.dbPath === 'string' ? initData.dbPath : '';
-
     this.db = (function(dbPath) {
-
         if (!fs.existsSync(dbPath)) {
             console.log('傳入的dbPath 沒有找到相對應的檔案，創建失敗!');
             return null;
@@ -43,11 +41,25 @@ var JsonDataBase = function(initData) {
             return {};
         }
     })(this.dbPath);
+    this.modal = this;
+}
+JsonDataBase.prototype.update = function () {
+    this.db = JSON.parse(fs.readFileSync(this.dbPath));
+    console.log('已更新db: %s', this.dbPath);
+}
+JsonDataBase.prototype.write = function (data) {
+    var newDataBase = typeof data !== 'undefined' ? data : this.db;
+
+    fs.writeFileSync(this.dbPath, JSON.stringify(newDataBase, null, 2));
+    console.log('已寫入db: %s', this.dbPath);
 }
 
-var db = new JsonDataBase({
-    dbPath: 'db/data.json'
-});
+var dbObject = new JsonDataBase({
+        dbPath: 'db/data.json'
+    }),
+    db = dbObject.modal;
+
+db.write({hello: 'there'});
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
@@ -73,8 +85,7 @@ function initDataBase(write) {
 }
 initDataBase();
 
-function updateDataBase() {
-}
+function updateDataBase() {}
 
 // 有點算是範例的兩個路由 start
 /*
