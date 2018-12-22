@@ -28,13 +28,20 @@ var JsonDataBase = function(initData) {
 
     this.dbPath = typeof initData.dbPath === 'string' ? initData.dbPath : '';
 
-    this.instance = (function(dbPath) {
+    this.db = (function(dbPath) {
 
         if (!fs.existsSync(dbPath)) {
             console.log('傳入的dbPath 沒有找到相對應的檔案，創建失敗!');
             return null;
         }
 
+        var json = fs.readFileSync(dbPath);
+        try {
+            return JSON.parse(json);
+        } catch (e) {
+            console.log('傳入的檔案路徑JSON.parse 失敗，將使用空物件 {}');
+            return {};
+        }
     })(this.dbPath);
 }
 
