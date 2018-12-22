@@ -73,22 +73,6 @@ var allowCrossDomain = function(req, res, next) {
 }
 app.use(allowCrossDomain);
 
-// 初始的database 要長怎樣
-function initDataBase(write) {
-    write = typeof write !== 'undefined' ? write : true;
-
-    db.array = (new Array(1)).fill().map(function(item, index) {
-        return index + 1;
-    });
-
-    // if (write) fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-
-    return db;
-}
-initDataBase();
-
-function updateDataBase() {}
-
 // 有點算是範例的兩個路由 start
 /*
 app.get('/list', function(req, res) {
