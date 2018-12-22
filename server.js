@@ -23,9 +23,18 @@ var pagerFunction = function(sourceArray, page, per_page) {
     };
 }
 
+
+
 var dbPath = 'db/data.json',
     db = fs.readFileSync(dbPath);
-db = JSON.parse(db);
+db = (function(db) {
+    try {
+        return JSON.parse(db);
+    } catch (e) {
+        console.log('JSON.parse 失敗，將使用空陣列作為database ');
+        return {};
+    }
+})(db);
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
@@ -36,6 +45,20 @@ var allowCrossDomain = function(req, res, next) {
     next();
 }
 app.use(allowCrossDomain);
+
+// 初始的database 要長怎樣
+function initDataBase(write) {
+    write = typeof write !== 'undefined' ? write : true;
+
+    db.array = (new Array(1)).fill().map(function(item, index) {
+        return index + 1;
+    });
+
+    if (write) fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+
+    return db;
+}
+initDataBase();
 
 // 有點算是範例的兩個路由 start
 /*
