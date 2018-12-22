@@ -43,11 +43,11 @@ var JsonDataBase = function(initData) {
     })(this.dbPath);
     this.modal = this;
 }
-JsonDataBase.prototype.update = function () {
+JsonDataBase.prototype.update = function() {
     this.db = JSON.parse(fs.readFileSync(this.dbPath));
     console.log('已更新db: %s', this.dbPath);
 }
-JsonDataBase.prototype.write = function (data) {
+JsonDataBase.prototype.write = function(data) {
     var newDataBase = typeof data !== 'undefined' ? data : this.db;
 
     fs.writeFileSync(this.dbPath, JSON.stringify(newDataBase, null, 2));
@@ -59,7 +59,9 @@ var dbObject = new JsonDataBase({
     }),
     db = dbObject.db;
 
-dbObject.write({dbObject: 'db'});
+dbObject.write({
+    dbObject: 'db'
+});
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
