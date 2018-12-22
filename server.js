@@ -57,9 +57,9 @@ JsonDataBase.prototype.write = function (data) {
 var dbObject = new JsonDataBase({
         dbPath: 'db/data.json'
     }),
-    db = dbObject.modal;
+    db = dbObject.db;
 
-db.write({hello: 'there'});
+dbObject.write({dbObject: 'db'});
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
