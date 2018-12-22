@@ -23,9 +23,9 @@ var pagerFunction = function(sourceArray, page, per_page) {
     };
 }
 
-/*var dbPath = 'db/data.json',
+var dbPath = 'db/data.json',
     db = fs.readFileSync(dbPath);
-db = JSON.parse(db);*/
+db = JSON.parse(db);
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT');
@@ -60,25 +60,20 @@ app.post('/user', function(req, res) {
 // 有點算是範例的兩個路由 end
 
 app.get('/app-domain', function(req, res) {
-    var dbPath = 'db/data.json',
-        db = fs.readFileSync(dbPath);
-    db = JSON.parse(db);
-    console.log(db);
+    console.log(db.randomNumber.toString());
+    console.log(db.randomNumber);
+    db.randomNumber = Math.random();
+    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 
     res.json({
         app_domain: db['app_domain']
     });
 });
 app.put('/app-domain', function(req, res) {
-    var dbPath = 'db/data.json',
-        db = fs.readFileSync(dbPath);
-    db = JSON.parse(db);
-    var body = '';
-
     req.on('data', chunk => {
         body += chunk.toString(); // convert Buffer to string
 
-        fs.writeFileSync('db/data.json', JSON.stringify(JSON.parse(body), null, 2));
+        fs.writeFileSync(dbPath, JSON.stringify(JSON.parse(body), null, 2));
         db = fs.readFileSync(dbPath);
         db = JSON.parse(db);
 
