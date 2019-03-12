@@ -33,14 +33,27 @@ var JsonDataBase = function(initData) {
             return null;
         }
 
-        var json = fs.readFileSync(dbPath);
+        var json = (function() {
+            var data = null;
+            if (initData.db) {
+                data = initData.db;
+                if (typeof data === 'string') {
+                    return data;
+                }
+                return JSON.stringify(data);
+            } else {
+                return fs.readFileSync(dbPath);
+            }
+        })(dbPath);
+
         try {
             return JSON.parse(json);
         } catch (e) {
-            console.log('傳入的檔案路徑JSON.parse 失敗，將使用空物件 {}');
+            console.log('JSON.parse 失敗，將使用空物件 {}');
             return {};
         }
     })(this.dbPath);
+
     this.modal = this;
 }
 JsonDataBase.prototype.update = function() {
@@ -49,25 +62,27 @@ JsonDataBase.prototype.update = function() {
 }
 JsonDataBase.prototype.write = function(data) {
     var newDataBase = typeof data !== 'undefined' ? data : this.db;
+    console.log(this.db);
 
     fs.writeFileSync(this.dbPath, JSON.stringify(newDataBase, null, 2));
     console.log('已寫入db: %s', this.dbPath);
 }
 
 var dbObject = new JsonDataBase({
-        dbPath: 'db/data.json'
-    }),
-    db = dbObject.db;
+        dbPath: 'db/data.json',
+        db: {}
+    });
 
-dbObject.write({
-    dbObject: 'db'
-});
+db = null;
+dbObject.write();
 
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Methods', 'PUT');
-    res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Authorization');
+    // res.header('Access-Control-Allow-Methods', 'PUT');
+    res.header('Access-Control-Allow-Origin', '*');
+    // res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Authorization, x-requested-with');
+    res.header('Access-Control-Expose-Headers', 'Location, Date, Hello')
+    res.header('Hello', 'hello, flyc')
 
     next();
 }
@@ -96,11 +111,11 @@ app.post('/user', function(req, res) {
 // 有點算是範例的兩個路由 end
 
 app.get('/app-domain', function(req, res) {
-    db.randomNumber = Math.random();
+    // db.randomNumber = Math.random();
     // fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
 
     res.json({
-        app_domain: db['app_domain']
+        key: 'value'
     });
 });
 
