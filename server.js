@@ -41,14 +41,6 @@ app.get('/list', function(req, res) {
     res.json([1, 2, 3, 4, 5, 5, 7, 7, 8, 9, 0, 1]);
 });
 app.post('/user', function(req, res) {
-    if (!db.userList) {
-        db.userList = [];
-    }
-    db.userList.push((new Array(2)).fill(null).map(function(item) {
-        return Math.random().toString();
-    }).splice(2).join(''));
-
-    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
     res.json({
         status: '200',
         message: '新增成功'
