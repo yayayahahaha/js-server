@@ -23,59 +23,6 @@ var pagerFunction = function(sourceArray, page, per_page) {
     };
 }
 
-var JsonDataBase = function(initData) {
-    initData = initData ? initData : {};
-
-    this.dbPath = typeof initData.dbPath === 'string' ? initData.dbPath : '';
-    this.db = (function(dbPath) {
-        if (!fs.existsSync(dbPath)) {
-            console.log('傳入的dbPath 沒有找到相對應的檔案，創建失敗!');
-            return null;
-        }
-
-        var json = (function() {
-            var data = null;
-            if (initData.db) {
-                data = initData.db;
-                if (typeof data === 'string') {
-                    return data;
-                }
-                return JSON.stringify(data);
-            } else {
-                return fs.readFileSync(dbPath);
-            }
-        })(dbPath);
-
-        try {
-            return JSON.parse(json);
-        } catch (e) {
-            console.log('JSON.parse 失敗，將使用空物件 {}');
-            return {};
-        }
-    })(this.dbPath);
-
-    this.modal = this;
-}
-JsonDataBase.prototype.update = function() {
-    this.db = JSON.parse(fs.readFileSync(this.dbPath));
-    console.log('已更新db: %s', this.dbPath);
-}
-JsonDataBase.prototype.write = function(data) {
-    var newDataBase = typeof data !== 'undefined' ? data : this.db;
-    console.log(this.db);
-
-    fs.writeFileSync(this.dbPath, JSON.stringify(newDataBase, null, 2));
-    console.log('已寫入db: %s', this.dbPath);
-}
-
-var dbObject = new JsonDataBase({
-        dbPath: 'db/data.json',
-        db: {}
-    });
-
-db = null;
-dbObject.write();
-
 var allowCrossDomain = function(req, res, next) {
     // res.header('Access-Control-Allow-Methods', 'PUT');
     res.header('Access-Control-Allow-Origin', '*');
@@ -110,10 +57,60 @@ app.post('/user', function(req, res) {
 */
 // 有點算是範例的兩個路由 end
 
-app.get('/app-domain', function(req, res) {
-    // db.randomNumber = Math.random();
-    // fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+var channelList = (new Array(10).fill().map(function(item, index) {
+        return {
+            channel_code: 'channel_code-' + (index + 1),
+            channel_name: 'channel_name-' + (index + 1)
+        };
+    })),
+    channelObject;
 
+app.get('/channel-list', function(req, res) {
+    res.json(channelList);
+});
+app.get('/channel-list/:channel_code', function(req, res) {
+    var channel_code = req.params.channel_code;
+    res.json((new Array(10).fill().map(function(item, index) {
+        var sequence = index + 1;
+        return {
+            channel_code: channel_code,
+            category_code: 'category_code-' + sequence,
+            category_name: 'category_name-' + sequence
+        };
+    })));
+});
+app.get('/channel-list/:channel_code/:category_code', function(req, res) {
+    var channel_code = req.params.channel_code,
+        category_code = req.params.category_code;
+
+    res.json((new Array(10).fill().map(function(item, index) {
+        var sequence = index + 1;
+        return {
+            channel_code: channel_code,
+            category_code: category_code,
+            product_type_code: 'product_type_code-' + sequence,
+            product_type_name: 'product_type_name-' + sequence
+        };
+    })));
+});
+app.get('/channel-list/:channel_code/:category_code/:product_type_code', function(req, res) {
+    var channel_code = req.params.channel_code,
+        category_code = req.params.category_code,
+        product_type_code = req.params.product_type_code;
+
+    res.json((new Array(10).fill().map(function(item, index) {
+        var sequence = index + 1;
+        return {
+            channel_code: channel_code,
+            category_code: category_code,
+            product_type_code: product_type_code,
+            play_type_code: 'play_type_code-' + sequence,
+            play_type_name: 'play_type_name-' + sequence
+        };
+    })));
+});
+
+app.get('/app-domain', function(req, res) {
     res.json({
         key: 'value'
     });
